@@ -25,20 +25,16 @@ class Equipe
     #[ORM\Column]
     private ?int $nombre = null;
 
-    #[ORM\ManyToOne(targetEntity: Ouvrier::class)]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: true)]
-    private ?Ouvrier $chef_equipe = null;
+    private ?User $chef_equipe = null;
 
-    #[ORM\OneToMany(targetEntity: Ouvrier::class, mappedBy: 'equipe')]
-    private Collection $ouvriers;
-
-    #[ORM\OneToMany(targetEntity: Chantier::class, mappedBy: 'equipe')]
-    private Collection $chantiers;
+    #[ORM\OneToMany(targetEntity: Affectation::class, mappedBy: 'equipe')]
+    private Collection $affectations;
 
     public function __construct()
     {
-        $this->ouvriers = new ArrayCollection();
-        $this->chantiers = new ArrayCollection();
+        $this->affectations = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -57,49 +53,30 @@ class Equipe
     public function getNombre(): ?int { return $this->nombre; }
     public function setNombre(int $nombre): static { $this->nombre = $nombre; return $this; }
 
-    public function getChefEquipe(): ?Ouvrier { return $this->chef_equipe; }
-    public function setChefEquipe(?Ouvrier $chef_equipe): static { $this->chef_equipe = $chef_equipe; return $this; }
+    public function getChefEquipe(): ?User { return $this->chef_equipe; }
+    public function setChefEquipe(?User $chef_equipe): static { $this->chef_equipe = $chef_equipe; return $this; }
 
     /**
-     * @return Collection<int, Ouvrier>
+     * @return Collection<int, Affectation>
      */
-    public function getOuvriers(): Collection { return $this->ouvriers; }
+    public function getAffectations(): Collection 
+    { 
+        return $this->affectations; 
+    }
 
-    public function addOuvrier(Ouvrier $ouvrier): static 
+    public function addAffectation(Affectation $affectation): static 
     {
-        if (!$this->ouvriers->contains($ouvrier)) {
-            $this->ouvriers->add($ouvrier);
-            $ouvrier->setEquipe($this);
+        if (!$this->affectations->contains($affectation)) {
+            $this->affectations->add($affectation);
+            $affectation->setEquipe($this);
         }
         return $this;
     }
 
-    public function removeOuvrier(Ouvrier $ouvrier): static 
+    public function removeAffectation(Affectation $affectation): static 
     {
-        if ($this->ouvriers->removeElement($ouvrier) && $ouvrier->getEquipe() === $this) {
-            $ouvrier->setEquipe(null);
-        }
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Chantier>
-     */
-    public function getChantiers(): Collection { return $this->chantiers; }
-
-    public function addChantier(Chantier $chantier): static 
-    {
-        if (!$this->chantiers->contains($chantier)) {
-            $this->chantiers->add($chantier);
-            $chantier->setEquipe($this);
-        }
-        return $this;
-    }
-
-    public function removeChantier(Chantier $chantier): static 
-    {
-        if ($this->chantiers->removeElement($chantier) && $chantier->getEquipe() === $this) {
-            $chantier->setEquipe(null);
+        if ($this->affectations->removeElement($affectation) && $affectation->getEquipe() === $this) {
+            $affectation->setEquipe(null);
         }
         return $this;
     }

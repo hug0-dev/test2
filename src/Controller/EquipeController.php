@@ -14,7 +14,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/equipe')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
-
 final class EquipeController extends AbstractController
 {
     #[Route(name: 'app_equipe_index', methods: ['GET'])]
@@ -36,24 +35,19 @@ final class EquipeController extends AbstractController
             $competances = $form->get('competance_equipe')->getData();
             $equipe->setCompetanceEquipe($competances);
 
-            $ouvriers = $form->get('ouvriers')->getData();
-            $equipe->setNombre(count($ouvriers));
+            $nombre = $form->get('nombre')->getData();
+            $equipe->setNombre($nombre);
 
             $entityManager->persist($equipe);
 
-            foreach ($ouvriers as $ouvrier) {
-                $ouvrier->setEquipe($equipe);
-                $entityManager->persist($ouvrier);
-            }
-
             if ($equipe->getChefEquipe()) {
                 $chef = $equipe->getChefEquipe();
-                $chef->setEquipe($equipe);
                 $entityManager->persist($chef);
             }
 
             $entityManager->flush();
 
+            $this->addFlash('success', 'Équipe créée avec succès !');
             return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -81,11 +75,12 @@ final class EquipeController extends AbstractController
             $competances = $form->get('competance_equipe')->getData();
             $equipe->setCompetanceEquipe($competances);
 
-            $ouvriers = $form->get('ouvriers')->getData();
-            $equipe->setNombre(count($ouvriers));
+            $nombre = $form->get('nombre')->getData();
+            $equipe->setNombre($nombre);
 
             $entityManager->flush();
 
+            $this->addFlash('success', 'Équipe modifiée avec succès !');
             return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -101,6 +96,7 @@ final class EquipeController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$equipe->getId(), $request->request->get('_token'))) {
             $entityManager->remove($equipe);
             $entityManager->flush();
+            $this->addFlash('success', 'Équipe supprimée avec succès !');
         }
 
         return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);

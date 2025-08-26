@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Chantier;
-use App\Entity\Ouvrier;
+use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -32,7 +32,7 @@ class ChantierType extends AbstractType
                     'Coffreur' => 'Coffreur',
                     'Ferrailleur' => 'Ferrailleur',
                     'Terrassier' => 'Terrassier',
-                    'Conducteur d’engins' => 'Conducteur d’engins',
+                    "Conducteur d'engins" => "Conducteur d'engins",
                     'Manœuvre de chantier' => 'Manœuvre de chantier',
                     'Grutier' => 'Grutier',
                     'Plombier' => 'Plombier',
@@ -73,16 +73,16 @@ class ChantierType extends AbstractType
                 'required' => true
             ])
             ->add('chef_chantier', EntityType::class, [
-                'class' => Ouvrier::class,
-                'choice_label' => 'nom_ouvrier',
+                'class' => User::class,
+                'choice_label' => 'nom',
                 'label' => 'Chef de Chantier',
                 'placeholder' => 'Sélectionnez un chef',
                 'required' => false,
                 'attr' => ['class' => 'form-select'],
                 'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('o')
-                        ->where('o.role = :role')
-                        ->setParameter('role', 'Chef');
+                    return $er->createQueryBuilder('u')
+                        ->where('u.roles LIKE :role')
+                        ->setParameter('role', '%ROLE_ADMIN%');
                 },
             ])
             ->add('imageFile', FileType::class, [

@@ -63,7 +63,7 @@ class AffectationController extends AbstractController
                 if ($this->datesOverlap($dateDebut, $dateFin, $existing->getDateDebut(), $existing->getDateFin())) {
                     $errors[] = sprintf(
                         "L'utilisateur %s est déjà affecté à un chantier du %s au %s.",
-                        $user->getNomOuvrier(),
+                        $user->getNom(),
                         $existing->getDateDebut()->format('Y-m-d'),
                         $existing->getDateFin()->format('Y-m-d')
                     );

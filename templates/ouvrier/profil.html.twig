@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>Mon Profil</h1>
+            <a href="{{ path('app_ouvrier_dashboard') }}" class="btn btn-secondary mb-3">← Retour au dashboard</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Informations personnelles</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <strong>Nom :</strong>
+                        </div>
+                        <div class="col-sm-9">
+                            {{ user.nom }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <strong>Email :</strong>
+                        </div>
+                        <div class="col-sm-9">
+                            {{ user.email }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <strong>Rôles :</strong>
+                        </div>
+                        <div class="col-sm-9">
+                            {% for role in user.roles %}
+                                <span class="badge bg-primary me-1">{{ role }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Mes Compétences</h5>
+                </div>
+                <div class="card-body">
+                    {% set competences = user.competences %}
+                    {% if competences|length > 0 %}
+                        {% for competence in competences %}
+                            <span class="badge bg-success me-1 mb-1">{{ competence }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Aucune compétence définie</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

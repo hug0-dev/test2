@@ -38,10 +38,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: "ouvriers")]
-    #[ORM\JoinColumn(onDelete: "SET NULL")]
-    private ?Equipe $equipe = null;
-
     #[ORM\OneToMany(targetEntity: UserCompetence::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $userCompetences;
 
@@ -132,17 +128,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
-    }
-
-    public function getEquipe(): ?Equipe
-    {
-        return $this->equipe;
-    }
-
-    public function setEquipe(?Equipe $equipe): static
-    {
-        $this->equipe = $equipe;
-        return $this;
     }
 
     /**

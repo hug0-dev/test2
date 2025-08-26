@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Affectations{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>Mes Affectations</h1>
+            <a href="{{ path('app_ouvrier_dashboard') }}" class="btn btn-secondary mb-3">← Retour au dashboard</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if affectations|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Chantier</th>
+                                <th>Équipe</th>
+                                <th>Date début</th>
+                                <th>Date fin</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for affectation in affectations %}
+                                <tr>
+                                    <td>{{ affectation.nom ?? 'Sans nom' }}</td>
+                                    <td>{{ affectation.chantier.nom }}</td>
+                                    <td>{{ affectation.equipe.nomEquipe }}</td>
+                                    <td>{{ affectation.dateDebut|date('d/m/Y') }}</td>
+                                    <td>{{ affectation.dateFin|date('d/m/Y') }}</td>
+                                    <td>
+                                        {% set now = date() %}
+                                        {% if affectation.dateDebut > now %}
+                                            <span class="badge bg-warning">À venir</span>
+                                        {% elseif affectation.dateFin < now %}
+                                            <span class="badge bg-secondary">Terminée</span>
+                                        {% else %}
+                                            <span class="badge bg-success">En cours</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <h4>Aucune affectation</h4>
+                    <p>Vous n'avez actuellement aucune affectation. Contactez votre responsable pour plus d'informations.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -50,12 +50,11 @@ class AffectationType extends AbstractType
                 },
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('u')
-                        ->join('u.roles', 'r')
                         ->where('u.roles LIKE :role')
-                        ->setParameter('role', '%ROLE_OUVRIER%');
+                        ->setParameter('role', '%ROLE_USER%');
                 },
-                'label' => 'Ouvrier',
-                'placeholder' => 'Sélectionnez un ouvrier',
+                'label' => 'Utilisateur',
+                'placeholder' => 'Sélectionnez un utilisateur',
                 'attr' => ['class' => 'form-control']
             ])
             ->add('equipe', EntityType::class, [
@@ -84,7 +83,7 @@ class AffectationType extends AbstractType
             $competencesUser = $user->getCompetences();
 
             if (empty($competencesUser) || empty(array_intersect($competencesRequises, $competencesUser))) {
-                $context->buildViolation('L\'ouvrier doit posséder au moins une des compétences requises pour ce chantier.')
+                $context->buildViolation('L\'utilisateur doit posséder au moins une des compétences requises pour ce chantier.')
                     ->atPath('user')
                     ->addViolation();
             }

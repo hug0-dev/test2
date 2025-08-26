@@ -1,0 +1,68 @@
+# config/packages/security.yaml
+security:
+    # Configuration des hashers de mot de passe
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+    
+    # Configuration des providers (fournisseurs d'utilisateurs)
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email  # Le champ utilisé pour identifier l'utilisateur
+    
+    # Configuration des firewalls (pare-feux)
+    firewalls:
+        # Firewall pour les outils de développement
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        
+        # Firewall principal
+        main:
+            lazy: true
+            provider: app_user_provider
+            
+            # Configuration du formulaire de connexion
+            form_login:
+                login_path: app_login           # Route pour afficher le formulaire
+                check_path: app_login           # Route pour traiter la connexion
+                username_parameter: email       # Nom du champ email dans le formulaire
+                password_parameter: _password   # Nom du champ mot de passe
+                enable_csrf: true              # Protection CSRF activée
+                default_target_path: app_home   # Redirection après connexion réussie
+            
+            # Configuration de la déconnexion
+            logout:
+                path: app_logout               # Route de déconnexion
+                target: app_login              # Redirection après déconnexion
+            
+            # Optionnel : Se souvenir de moi
+            # remember_me:
+            #     secret: '%kernel.secret%'
+            #     lifetime: 604800 # 1 semaine en secondes
+            #     path: /
+    
+    # Contrôle d'accès par routes
+    access_control:
+        - { path: ^/login, roles: PUBLIC_ACCESS }      # Page de connexion accessible à tous
+        - { path: ^/register, roles: PUBLIC_ACCESS }   # Page d'inscription accessible à tous
+        - { path: ^/admin, roles: ROLE_ADMIN }         # Section admin réservée aux admins
+        - { path: ^/chantier, roles: ROLE_ADMIN }      # Gestion des chantiers pour admins
+        - { path: ^/equipe, roles: ROLE_ADMIN }        # Gestion des équipes pour admins
+        - { path: ^/ouvrier, roles: ROLE_USER }        # Section ouvrier pour utilisateurs connectés
+        - { path: ^/, roles: ROLE_USER }               # Toutes les autres pages nécessitent une connexion
+    
+    # Hiérarchie des rôles
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER  # Les admins héritent automatiquement du rôle USER
+        
+    # Optionnel : Configuration avancée
+    # enable_authenticator_manager: true
+    
+    # Optionnel : Configuration pour l'API (si vous en avez une)
+    # firewalls:
+    #     api:
+    #         pattern: ^/api/
+    #         stateless: true
+    #         jwt: ~

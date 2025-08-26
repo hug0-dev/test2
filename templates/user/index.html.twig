@@ -1,0 +1,154 @@
+<!-- templates/user/index.html.twig -->
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Utilisateurs{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Gestion des Utilisateurs</h1>
+            
+            <div class="mb-3">
+                <a href="{{ path('app_register') }}" class="btn btn-primary">Nouveau Utilisateur</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Rôles</th>
+                            <th>Équipe</th>
+                            <th>Compétences</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.nom }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% for role in user.roles %}
+                                        <span class="badge bg-secondary">{{ role }}</span>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% if user.equipe %}
+                                        {{ user.equipe.nomEquipe }}
+                                    {% else %}
+                                        <span class="text-muted">Aucune équipe</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.competences|length > 0 %}
+                                        {% for competence in user.competences %}
+                                            <span class="badge bg-info">{{ competence }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted">Aucune compétence</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-sm btn-outline-primary">Voir</a>
+                                    <a href="{{ path('app_user_manage_competences', {'id': user.id}) }}" class="btn btn-sm btn-outline-warning">Compétences</a>
+                                    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de supprimer cet utilisateur ?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center">Aucun utilisateur trouvé</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<!-- templates/user/show.html.twig -->
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateur {{ user.nom }}{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Détails de l'utilisateur</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ user.nom }}</h5>
+            <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
+            <p class="card-text"><strong>Rôles:</strong> 
+                {% for role in user.roles %}
+                    <span class="badge bg-secondary">{{ role }}</span>
+                {% endfor %}
+            </p>
+            
+            {% if user.equipe %}
+                <p class="card-text"><strong>Équipe:</strong> {{ user.equipe.nomEquipe }}</p>
+            {% endif %}
+            
+            <p class="card-text"><strong>Compétences:</strong>
+                {% if user.competences|length > 0 %}
+                    <br>
+                    {% for competence in user.competences %}
+                        <span class="badge bg-info me-1">{{ competence }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span class="text-muted">Aucune compétence assignée</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a href="{{ path('app_user_manage_competences', {'id': user.id}) }}" class="btn btn-warning">Gérer les compétences</a>
+        <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Retour à la liste</a>
+    </div>
+</div>
+{% endblock %}
+
+<!-- templates/user/manage_competences.html.twig -->
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des compétences - {{ user.nom }}{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Gestion des compétences pour {{ user.nom }}</h1>
+    
+    <form method="post">
+        <div class="row">
+            {% for competence in competences %}
+                <div class="col-md-4 mb-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="competences[]" value="{{ competence.id }}" id="competence_{{ competence.id }}"
+                               {% if competence.id in userCompetences %}checked{% endif %}>
+                        <label class="form-check-label" for="competence_{{ competence.id }}">
+                            {{ competence.nom }}
+                            {% if competence.description %}
+                                <small class="text-muted d-block">{{ competence.description }}</small>
+                            {% endif %}
+                        </label>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Sauvegarder</button>
+            <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

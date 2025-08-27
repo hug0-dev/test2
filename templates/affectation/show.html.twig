@@ -1,35 +1,133 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Affectation des équipes{% endblock %}
+{% block title %}Détails de l'Affectation{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-    <h2 class="text-center mb-4">Affectation</h2>
-
-    <div class="card shadow-lg border-0">
-        {% if affectation.chantier.image %}
-            <img src="{{ asset('uploads/images/' ~ affectation.chantier.image) }}" class="card-img-top" alt="Image du Chantier">
-        {% else %}
-            <img src="{{ asset('uploads/images/default-placeholder.png') }}" class="card-img-top" alt="Pas d'image">
-        {% endif %}
-        <div class="card-body">
-            <h4 class="card-title text-primary">{{ affectation.nom }}</h4>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Equipe :</strong> {{ affectation.equipe.nomEquipe }}</li>
-                <li class="list-group-item"><strong>Chantier :</strong> {{ affectation.chantier.nom}}</li>
-                <li class="list-group-item"><strong>Date de Début :</strong> {{ affectation.dateDebut ? affectation.dateDebut|date('d/m/Y') : '-' }}</li>
-                <li class="list-group-item"><strong>Date de Fin :</strong> {{ affectation.dateFin ? affectation.dateFin|date('d/m/Y') : '-' }}</li>
-            </ul>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Détails de l'Affectation</h1>
+            <a href="{{ path('app_affectation_index') }}" class="btn btn-secondary mb-3">← Retour à la liste</a>
         </div>
     </div>
 
-        <div class="mt-4 text-center">
-        <a href="{{ path('app_affectation_index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Retour à la liste
-        </a>
-        <a href="{{ path('app_affectation_edit', {'id': affectation.id}) }}" class="btn btn-warning">
-            <i class="fas fa-edit"></i> Modifier
-        </a>
-        {{ include('affectation/_delete_form.html.twig') }}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ affectation.nom ?? 'Affectation sans nom' }}</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>Nom :</strong> {{ affectation.nom ?? 'Non défini' }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Utilisateur :</strong> 
+                            {% if affectation.user %}
+                                {{ affectation.user.nom }}
+                                <small class="text-muted">({{ affectation.user.email }})</small>
+                            {% else %}
+                                <span class="text-muted">Aucun utilisateur assigné</span>
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Chantier :</strong> 
+                            {% if affectation.chantier %}
+                                {{ affectation.chantier.nom }}
+                            {% else %}
+                                <span class="text-muted">Aucun chantier assigné</span>
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Équipe :</strong> 
+                            {% if affectation.equipe %}
+                                {{ affectation.equipe.nomEquipe }}
+                                <small class="text-muted">({{ affectation.equipe.nombre }} membres)</small>
+                            {% else %}
+                                <span class="text-muted">Aucune équipe assignée</span>
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Date de début :</strong> 
+                            {{ affectation.dateDebut ? affectation.dateDebut|date('d/m/Y') : 'Non définie' }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Date de fin :</strong> 
+                            {{ affectation.dateFin ? affectation.dateFin|date('d/m/Y') : 'Non définie' }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Durée :</strong> 
+                            {% if affectation.dateDebut and affectation.dateFin %}
+                                {{ affectation.dateDebut.diff(affectation.dateFin).days + 1 }} jour(s)
+                            {% else %}
+                                Non calculable
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            {% if affectation.user %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">Compétences de l'utilisateur</h6>
+                    </div>
+                    <div class="card-body">
+                        {% set competences = affectation.user.competences %}
+                        {% if competences|length > 0 %}
+                            {% for competence in competences %}
+                                <span class="badge bg-success me-1 mb-1">{{ competence }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted mb-0">Aucune compétence définie</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if affectation.equipe %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">Compétences de l'équipe</h6>
+                    </div>
+                    <div class="card-body">
+                        {% set competencesEquipe = affectation.equipe.competanceEquipe %}
+                        {% if competencesEquipe|length > 0 %}
+                            {% for competence in competencesEquipe %}
+                                <span class="badge bg-info me-1 mb-1">{{ competence }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted mb-0">Aucune compétence définie</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ path('app_affectation_edit', {'id': affectation.id}) }}" 
+                           class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                        <form method="post" 
+                              action="{{ path('app_affectation_delete', {'id': affectation.id}) }}" 
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette affectation ?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ affectation.id) }}">
+                            <button class="btn btn-danger w-100" type="submit">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}

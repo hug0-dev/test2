@@ -4,40 +4,112 @@
 
 {% block body %}
 <div class="container">
-    <h1>Bienvenue {{ user.nom }}</h1>
-    
     <div class="row">
-        <div class="col-md-4">
-            <div class="card">
+        <div class="col-12">
+            <h1 class="mb-4">Dashboard Ouvrier</h1>
+            <div class="alert alert-success">
+                <h5>👋 Bienvenue {{ user.nom }} !</h5>
+                <p class="mb-0">Email : {{ user.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">📋 Mes Affectations</h5>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Mes Affectations</h5>
-                    <p class="card-text">Consultez vos affectations en cours et à venir.</p>
-                    <a href="{{ path('app_ouvrier_affectations') }}" class="btn btn-primary">Voir mes affectations</a>
+                    <p class="card-text">Consultez vos affectations en cours et à venir sur les différents chantiers.</p>
+                    <div class="d-grid">
+                        <a href="{{ path('app_ouvrier_affectations') }}" class="btn btn-primary">
+                            Voir mes affectations
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-4">
-            <div class="card">
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">👤 Mon Profil</h5>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Mon Profil</h5>
-                    <p class="card-text">Consultez vos informations et compétences.</p>
-                    <a href="{{ path('app_ouvrier_profil') }}" class="btn btn-secondary">Voir mon profil</a>
+                    <p class="card-text">Consultez et gérez vos informations personnelles et compétences.</p>
+                    <div class="d-grid">
+                        <a href="{{ path('app_ouvrier_profil') }}" class="btn btn-secondary">
+                            Voir mon profil
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <div class="col-md-4">
-            <div class="card">
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">🔧 Mes Compétences</h5>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Mon Équipe</h5>
-                    <p class="card-text">
-                        {% if user.equipe %}
-                            Vous faites partie de l'équipe <strong>{{ user.equipe.nomEquipe }}</strong>
-                        {% else %}
-                            Vous n'êtes assigné à aucune équipe actuellement.
-                        {% endif %}
-                    </p>
+                    {% set competences = user.competences %}
+                    {% if competences|length > 0 %}
+                        <p class="card-text">Vous possédez {{ competences|length }} compétence(s) :</p>
+                        <div class="mb-3">
+                            {% for competence in competences %}
+                                <span class="badge bg-success me-1 mb-1">{{ competence }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="card-text text-muted">Aucune compétence définie pour le moment.</p>
+                        <p class="small">Contactez votre responsable pour ajouter vos compétences.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 Statistiques rapides</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h3 class="text-primary">{{ user.affectations|length }}</h3>
+                            <p class="text-muted">Total affectations</p>
+                        </div>
+                        <div class="col-md-3">
+                            {% set affectationsActives = 0 %}
+                            {% set now = date() %}
+                            {% for affectation in user.affectations %}
+                                {% if affectation.dateDebut <= now and affectation.dateFin >= now %}
+                                    {% set affectationsActives = affectationsActives + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            <h3 class="text-success">{{ affectationsActives }}</h3>
+                            <p class="text-muted">Affectations actives</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h3 class="text-info">{{ user.competences|length }}</h3>
+                            <p class="text-muted">Compétences</p>
+                        </div>
+                        <div class="col-md-3">
+                            {% if user.roles %}
+                                {% for role in user.roles %}
+                                    {% if role == 'ROLE_ADMIN' %}
+                                        <h3 class="text-warning">Admin</h3>
+                                    {% else %}
+                                        <h3 class="text-secondary">User</h3>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            <p class="text-muted">Statut</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

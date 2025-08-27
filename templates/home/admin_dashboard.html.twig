@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}BTP Manager{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-5">
+    
+    <!-- Section de bienvenue -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-12">
+            <div class="bg-secondary text-white rounded p-4 text-center">
+                <h2 class="mb-0">Bienvenue sur la gestion des équipes et chantiers</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cartes principales -->
+    <div class="row g-4">
+        <!-- Équipes -->
+        <div class="col-md-6">
+            <div class="card bg-primary text-white h-100" style="border-radius: 20px;">
+                <div class="card-body p-4 d-flex flex-column justify-content-between" style="min-height: 200px;">
+                    <div>
+                        <h4 class="card-title fw-bold mb-3">Équipes</h4>
+                        <p class="card-text mb-4">Gérez les équipes travaillant sur vos projets.</p>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{ path('app_equipe_index') }}" class="btn btn-light btn-lg rounded-pill px-4">
+                            Voir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Affectations -->
+        <div class="col-md-6">
+            <div class="card bg-primary text-white h-100" style="border-radius: 20px;">
+                <div class="card-body p-4 d-flex flex-column justify-content-between" style="min-height: 200px;">
+                    <div>
+                        <h4 class="card-title fw-bold mb-3">Affectations</h4>
+                        <p class="card-text mb-4">Suivez les affectations de vos ouvriers.</p>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{ path('app_affectation_index') }}" class="btn btn-light btn-lg rounded-pill px-4">
+                            Voir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chantiers -->
+        <div class="col-md-6">
+            <div class="card bg-primary text-white h-100" style="border-radius: 20px;">
+                <div class="card-body p-4 d-flex flex-column justify-content-between" style="min-height: 200px;">
+                    <div>
+                        <h4 class="card-title fw-bold mb-3">Chantiers</h4>
+                        <p class="card-text mb-4">Consultez la liste des chantiers en cours.</p>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{ path('app_chantier_index') }}" class="btn btn-light btn-lg rounded-pill px-4">
+                            Voir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ouvriers -->
+        <div class="col-md-6">
+            <div class="card bg-primary text-white h-100" style="border-radius: 20px;">
+                <div class="card-body p-4 d-flex flex-column justify-content-between" style="min-height: 200px;">
+                    <div>
+                        <h4 class="card-title fw-bold mb-3">Ouvriers</h4>
+                        <p class="card-text mb-4">Gérez vos ouvriers et leurs compétences.</p>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{ path('app_user_index') }}" class="btn btn-light btn-lg rounded-pill px-4">
+                            Voir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -31,7 +31,7 @@
                                 <tr>
                                     <td>{{ affectation.nom ?? 'Sans nom' }}</td>
                                     <td>{{ affectation.chantier.nom }}</td>
-                                    <td>{{ affectation.equipe.nomEquipe }}</td>
+                                    <td>{{ affectation.equipe ? affectation.equipe.nomEquipe : 'Aucune équipe' }}</td>
                                     <td>{{ affectation.dateDebut|date('d/m/Y') }}</td>
                                     <td>{{ affectation.dateFin|date('d/m/Y') }}</td>
                                     <td>

@@ -1,38 +1,73 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des équipes{% endblock %}
+{% block title %}Gestion des Équipes{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h1 class="mb-4">Liste des équipes</h1>
-
-        <div class="mb-3">
-            <a href="{{ path('app_equipe_new') }}" class="btn btn-primary">Créer une nouvelle équipe</a>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Gestion des Équipes</h1>
+            <a href="{{ path('app_equipe_new') }}" class="btn btn-success mb-3">
+                <i class="fas fa-plus"></i> Nouvelle équipe
+            </a>
         </div>
+    </div>
 
-        <div class="row">
+    <div class="row">
+        {% if equipes|length > 0 %}
             {% for equipe in equipes %}
-                <div class="col-md-4">
-                    <div class="card mb-4 shadow-sm">
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0">{{ equipe.nomEquipe }}</h5>
+                        </div>
                         <div class="card-body">
-                            <h5 class="card-title">{{ equipe.nomEquipe }}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Compétence : {{ equipe.competanceEquipe|join(', ') }}</h6>
-                            <p class="card-text"><strong>Membres :</strong> {{ equipe.nombre }}</p>
                             <p class="card-text">
-                                <strong>Chef :</strong> {{ equipe.chefEquipe ? equipe.chefEquipe.nomOuvrier : 'Aucun' }}
+                                <strong>Nombre de membres :</strong> {{ equipe.nombre }}<br>
+                                <strong>Chef d'équipe :</strong> 
+                                {% if equipe.chefEquipe %}
+                                    {{ equipe.chefEquipe.nom }}
+                                    <small class="text-muted">({{ equipe.chefEquipe.email }})</small>
+                                {% else %}
+                                    <span class="text-muted">Aucun chef assigné</span>
+                                {% endif %}
                             </p>
-                            <div class="d-flex justify-content-between">
-                                <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" class="btn btn-info btn-sm">Voir</a>
-                                <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                            
+                            {% if equipe.competanceEquipe|length > 0 %}
+                                <p class="card-text">
+                                    <strong>Compétences :</strong><br>
+                                    {% for competence in equipe.competanceEquipe %}
+                                        <span class="badge bg-primary me-1 mb-1">{{ competence }}</span>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer">
+                            <div class="btn-group w-100" role="group">
+                                <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" 
+                                   class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-eye"></i> Voir
+                                </a>
+                                <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" 
+                                   class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-            {% else %}
-                <div class="col-12 text-center">
-                    <p>Aucune équipe trouvée</p>
-                </div>
             {% endfor %}
-        </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <h4>Aucune équipe</h4>
+                    <p>Il n'y a encore aucune équipe créée.</p>
+                    <a href="{{ path('app_equipe_new') }}" class="btn btn-success">
+                        Créer la première équipe
+                    </a>
+                </div>
+            </div>
+        {% endif %}
     </div>
+</div>
 {% endblock %}

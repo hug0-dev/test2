@@ -46,6 +46,15 @@
                             {% endfor %}
                         </div>
                     </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <strong>Membre depuis :</strong>
+                        </div>
+                        <div class="col-sm-9">
+                            <span class="text-muted">Informations non disponibles</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -58,12 +67,34 @@
                 <div class="card-body">
                     {% set competences = user.competences %}
                     {% if competences|length > 0 %}
+                        <p class="text-muted mb-3">{{ competences|length }} compétence(s) validée(s) :</p>
                         {% for competence in competences %}
                             <span class="badge bg-success me-1 mb-1">{{ competence }}</span>
                         {% endfor %}
                     {% else %}
-                        <p class="text-muted">Aucune compétence définie</p>
+                        <div class="alert alert-info">
+                            <h6>Aucune compétence définie</h6>
+                            <p class="mb-0 small">Contactez votre responsable pour ajouter vos compétences métier.</p>
+                        </div>
                     {% endif %}
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Statistiques</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="row">
+                        <div class="col-6">
+                            <h4 class="text-primary">{{ user.affectations|length }}</h4>
+                            <small class="text-muted">Affectations totales</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-success">{{ competences|length }}</h4>
+                            <small class="text-muted">Compétences</small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

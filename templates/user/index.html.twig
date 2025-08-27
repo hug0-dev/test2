@@ -1,154 +1,144 @@
-<!-- templates/user/index.html.twig -->
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des Utilisateurs{% endblock %}
+{% block title %}Gestion des Utilisateurs{% endblock %}
 
 {% block body %}
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <h1>Gestion des Utilisateurs</h1>
+        <div class="col-12">
+            <h1 class="mb-4">Gestion des Utilisateurs</h1>
             
-            <div class="mb-3">
-                <a href="{{ path('app_register') }}" class="btn btn-primary">Nouveau Utilisateur</a>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <p class="text-muted mb-0">{{ users|length }} utilisateur(s) enregistré(s)</p>
+                <a href="{{ path('app_register') }}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Nouvel utilisateur
+                </a>
             </div>
+        </div>
+    </div>
 
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nom</th>
-                            <th>Email</th>
-                            <th>Rôles</th>
-                            <th>Équipe</th>
-                            <th>Compétences</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                            <tr>
-                                <td>{{ user.id }}</td>
-                                <td>{{ user.nom }}</td>
-                                <td>{{ user.email }}</td>
-                                <td>
-                                    {% for role in user.roles %}
-                                        <span class="badge bg-secondary">{{ role }}</span>
-                                    {% endfor %}
-                                </td>
-                                <td>
-                                    {% if user.equipe %}
-                                        {{ user.equipe.nomEquipe }}
-                                    {% else %}
-                                        <span class="text-muted">Aucune équipe</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if user.competences|length > 0 %}
-                                        {% for competence in user.competences %}
-                                            <span class="badge bg-info">{{ competence }}</span>
-                                        {% endfor %}
-                                    {% else %}
-                                        <span class="text-muted">Aucune compétence</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-sm btn-outline-primary">Voir</a>
-                                    <a href="{{ path('app_user_manage_competences', {'id': user.id}) }}" class="btn btn-sm btn-outline-warning">Compétences</a>
-                                    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de supprimer cet utilisateur ?')">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                        <button class="btn btn-sm btn-outline-danger">Supprimer</button>
-                                    </form>
-                                </td>
-                            </tr>
+    <div class="row">
+        {% for user in users %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">{{ user.nom }}</h6>
+                        {% if 'ROLE_ADMIN' in user.roles %}
+                            <span class="badge bg-danger">Admin</span>
                         {% else %}
-                            <tr>
-                                <td colspan="7" class="text-center">Aucun utilisateur trouvé</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+                            <span class="badge bg-primary">Utilisateur</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>Email:</strong> {{ user.email }}<br>
+                            <strong>Rôles:</strong> 
+                            {% for role in user.roles %}
+                                <span class="badge bg-secondary me-1">{{ role }}</span>
+                            {% endfor %}
+                        </p>
 
-<!-- templates/user/show.html.twig -->
-{% extends 'base.html.twig' %}
+                        {% set competences = user.competences %}
+                        {% if competences|length > 0 %}
+                            <p class="card-text">
+                                <strong>Compétences ({{ competences|length }}):</strong><br>
+                                {% for competence in competences %}
+                                    <span class="badge bg-success me-1 mb-1">{{ competence }}</span>
+                                {% endfor %}
+                            </p>
+                        {% else %}
+                            <p class="card-text text-muted">
+                                <strong>Compétences:</strong> Aucune compétence définie
+                            </p>
+                        {% endif %}
 
-{% block title %}Utilisateur {{ user.nom }}{% endblock %}
-
-{% block body %}
-<div class="container">
-    <h1>Détails de l'utilisateur</h1>
-    
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">{{ user.nom }}</h5>
-            <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
-            <p class="card-text"><strong>Rôles:</strong> 
-                {% for role in user.roles %}
-                    <span class="badge bg-secondary">{{ role }}</span>
-                {% endfor %}
-            </p>
-            
-            {% if user.equipe %}
-                <p class="card-text"><strong>Équipe:</strong> {{ user.equipe.nomEquipe }}</p>
-            {% endif %}
-            
-            <p class="card-text"><strong>Compétences:</strong>
-                {% if user.competences|length > 0 %}
-                    <br>
-                    {% for competence in user.competences %}
-                        <span class="badge bg-info me-1">{{ competence }}</span>
-                    {% endfor %}
-                {% else %}
-                    <span class="text-muted">Aucune compétence assignée</span>
-                {% endif %}
-            </p>
-        </div>
-    </div>
-    
-    <div class="mt-3">
-        <a href="{{ path('app_user_manage_competences', {'id': user.id}) }}" class="btn btn-warning">Gérer les compétences</a>
-        <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Retour à la liste</a>
-    </div>
-</div>
-{% endblock %}
-
-<!-- templates/user/manage_competences.html.twig -->
-{% extends 'base.html.twig' %}
-
-{% block title %}Gestion des compétences - {{ user.nom }}{% endblock %}
-
-{% block body %}
-<div class="container">
-    <h1>Gestion des compétences pour {{ user.nom }}</h1>
-    
-    <form method="post">
-        <div class="row">
-            {% for competence in competences %}
-                <div class="col-md-4 mb-2">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="competences[]" value="{{ competence.id }}" id="competence_{{ competence.id }}"
-                               {% if competence.id in userCompetences %}checked{% endif %}>
-                        <label class="form-check-label" for="competence_{{ competence.id }}">
-                            {{ competence.nom }}
-                            {% if competence.description %}
-                                <small class="text-muted d-block">{{ competence.description }}</small>
-                            {% endif %}
-                        </label>
+                        {% if user.affectations|length > 0 %}
+                            <p class="card-text">
+                                <strong>Affectations:</strong> {{ user.affectations|length }} affectation(s)
+                            </p>
+                        {% else %}
+                            <p class="card-text text-muted">
+                                <strong>Affectations:</strong> Aucune affectation
+                            </p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group w-100" role="group">
+                            <a href="{{ path('app_user_show', {'id': user.id}) }}" 
+                               class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-eye"></i> Voir
+                            </a>
+                            <a href="{{ path('app_user_manage_competences', {'id': user.id}) }}" 
+                               class="btn btn-outline-warning btn-sm">
+                                <i class="fas fa-cog"></i> Compétences
+                            </a>
+                            <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" 
+                                  style="display: inline;" 
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                <button class="btn btn-outline-danger btn-sm" type="submit">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            {% endfor %}
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <h4>Aucun utilisateur</h4>
+                    <p>Il n'y a encore aucun utilisateur enregistré dans le système.</p>
+                    <a href="{{ path('app_register') }}" class="btn btn-success">
+                        Créer le premier utilisateur
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if users|length > 0 %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Statistiques</h5>
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <h3 class="text-primary">{{ users|length }}</h3>
+                                <p class="text-muted">Total utilisateurs</p>
+                            </div>
+                            <div class="col-md-3">
+                                {% set admins = 0 %}
+                                {% for user in users %}
+                                    {% if 'ROLE_ADMIN' in user.roles %}
+                                        {% set admins = admins + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                <h3 class="text-danger">{{ admins }}</h3>
+                                <p class="text-muted">Administrateurs</p>
+                            </div>
+                            <div class="col-md-3">
+                                {% set totalCompetences = 0 %}
+                                {% for user in users %}
+                                    {% set totalCompetences = totalCompetences + user.competences|length %}
+                                {% endfor %}
+                                <h3 class="text-success">{{ totalCompetences }}</h3>
+                                <p class="text-muted">Total compétences</p>
+                            </div>
+                            <div class="col-md-3">
+                                {% set totalAffectations = 0 %}
+                                {% for user in users %}
+                                    {% set totalAffectations = totalAffectations + user.affectations|length %}
+                                {% endfor %}
+                                <h3 class="text-info">{{ totalAffectations }}</h3>
+                                <p class="text-muted">Total affectations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Sauvegarder</button>
-            <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Annuler</a>
-        </div>
-    </form>
+    {% endif %}
 </div>
 {% endblock %}

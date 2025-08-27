@@ -44,11 +44,14 @@ class EquipeType extends AbstractType
                     'Solier-moquettiste' => 'Solier-moquettiste',
                     'Staffeur-Ornemaniste' => 'Staffeur-Ornemaniste',
                 ],
-                'multiple' => true, // Permet de cocher plusieurs choix
-                'expanded' => true, // Affiche les options sous forme de cases à cocher
+                'multiple' => true,
+                'expanded' => false, // FALSE = liste déroulante multiselect, TRUE = cases à cocher
                 'label' => 'Compétences de l\'équipe',
                 'required' => true,
-                'attr' => ['class' => 'form-check']
+                'attr' => [
+                    'class' => 'form-select',
+                    'size' => 10  // Hauteur de la liste (nombre d'options visibles)
+                ]
             ])
             ->add('nombre', IntegerType::class, [
                 'label' => 'Nombre de membres',

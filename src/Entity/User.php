@@ -38,6 +38,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    // NOUVEAU : Relation avec l'équipe (un user appartient à une équipe)
+    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: 'membres')]
+    #[ORM\JoinColumn(name: 'id_equipe', nullable: true, onDelete: 'SET NULL')]
+    private ?Equipe $equipe = null;
+
     #[ORM\OneToMany(targetEntity: UserCompetence::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $userCompetences;
 
@@ -77,6 +82,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // NOUVEAU : Getter/Setter pour l'équipe
+    public function getEquipe(): ?Equipe
+    {
+        return $this->equipe;
+    }
+
+    public function setEquipe(?Equipe $equipe): static
+    {
+        $this->equipe = $equipe;
+        return $this;
+    }
+
     /**
      * A visual identifier that represents this user.
      */
@@ -104,7 +121,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 

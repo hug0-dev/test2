@@ -1,118 +1,151 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Détails de l'Équipe{% endblock %}
+{% block title %}Équipe : {{ equipe.nomEquipe }}{% endblock %}
 
 {% block body %}
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="mb-4">{{ equipe.nomEquipe }}</h1>
-            <a href="{{ path('app_equipe_index') }}" class="btn btn-secondary mb-3">← Retour à la liste</a>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Équipe : {{ equipe.nomEquipe }}</h1>
+        <div>
+            <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" class="btn btn-primary me-2">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+            <a href="{{ path('app_equipe_index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-8">
-            <div class="card">
+        <!-- Informations générales -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
                 <div class="card-header">
-                    <h5 class="mb-0">Informations de l'équipe</h5>
+                    <h5><i class="fas fa-info-circle me-2"></i>Informations générales</h5>
                 </div>
                 <div class="card-body">
-                    <table class="table table-borderless">
-                        <tr>
-                            <th>Nom de l'équipe :</th>
-                            <td>{{ equipe.nomEquipe }}</td>
-                        </tr>
-                        <tr>
-                            <th>Nombre de membres :</th>
-                            <td>{{ equipe.nombre }}</td>
-                        </tr>
-                        <tr>
-                            <th>Chef d'équipe :</th>
-                            <td>
-                                {% if equipe.chefEquipe %}
-                                    {{ equipe.chefEquipe.nom }}
-                                    <small class="text-muted">({{ equipe.chefEquipe.email }})</small>
-                                {% else %}
-                                    <span class="text-muted">Aucun chef assigné</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="mb-3">
+                        <label class="fw-bold">Nom de l'équipe :</label>
+                        <p class="mb-0">{{ equipe.nomEquipe }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="fw-bold">Chef d'équipe :</label>
+                        {% if equipe.chefEquipe %}
+                            <p class="mb-0">
+                                <span class="badge bg-warning">{{ equipe.chefEquipe.nom }}</span>
+                            </p>
+                        {% else %}
+                            <p class="text-muted mb-0">Aucun chef d'équipe assigné</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="fw-bold">Nombre de membres :</label>
+                        <p class="mb-0">
+                            <span class="badge bg-info fs-6">{{ equipe.nombre }} membre(s)</span>
+                        </p>
+                    </div>
                 </div>
             </div>
-
-            {% if equipe.affectations|length > 0 %}
-                <div class="card mt-3">
-                    <div class="card-header">
-                        <h5 class="mb-0">Affectations de l'équipe</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Chantier</th>
-                                        <th>Utilisateur</th>
-                                        <th>Début</th>
-                                        <th>Fin</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for affectation in equipe.affectations %}
-                                        <tr>
-                                            <td>{{ affectation.chantier ? affectation.chantier.nom : 'N/A' }}</td>
-                                            <td>{{ affectation.user ? affectation.user.nom : 'N/A' }}</td>
-                                            <td>{{ affectation.dateDebut ? affectation.dateDebut|date('d/m/Y') : 'N/A' }}</td>
-                                            <td>{{ affectation.dateFin ? affectation.dateFin|date('d/m/Y') : 'N/A' }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
         </div>
 
-        <div class="col-md-4">
-            <div class="card">
+        <!-- Membres de l'équipe -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
                 <div class="card-header">
-                    <h6 class="mb-0">Compétences de l'équipe</h6>
+                    <h5><i class="fas fa-users me-2"></i>Membres de l'équipe</h5>
                 </div>
                 <div class="card-body">
-                    {% if equipe.competanceEquipe|length > 0 %}
-                        {% for competence in equipe.competanceEquipe %}
-                            <span class="badge bg-primary me-1 mb-1">{{ competence }}</span>
-                        {% endfor %}
+                    {% if equipe.membres|length > 0 %}
+                        <ul class="list-group list-group-flush">
+                            {% for membre in equipe.membres %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        <i class="fas fa-user me-2"></i>{{ membre.nom }}
+                                        <div class="small text-muted">{{ membre.email }}</div>
+                                    </div>
+                                    <div>
+                                        {% if equipe.chefEquipe and membre.id == equipe.chefEquipe.id %}
+                                            <span class="badge bg-warning">Chef</span>
+                                        {% endif %}
+                                        {% if membre.competences|length > 0 %}
+                                            <span class="badge bg-secondary">{{ membre.competences|length }} compétence(s)</span>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
                     {% else %}
-                        <p class="text-muted mb-0">Aucune compétence définie</p>
+                        <div class="text-center text-muted">
+                            <i class="fas fa-users fa-2x mb-3"></i>
+                            <p>Aucun membre assigné à cette équipe</p>
+                            <small>Assignez des ouvriers via la gestion des utilisateurs</small>
+                        </div>
                     {% endif %}
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="card mt-3">
+    <!-- Compétences de l'équipe -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
                 <div class="card-header">
-                    <h6 class="mb-0">Actions</h6>
+                    <h5><i class="fas fa-tools me-2"></i>Compétences disponibles dans l'équipe</h5>
                 </div>
                 <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" 
-                           class="btn btn-warning">
-                            <i class="fas fa-edit"></i> Modifier
-                        </a>
-                        <form method="post" 
-                              action="{{ path('app_equipe_delete', {'id': equipe.id}) }}" 
-                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette équipe ?')">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ equipe.id) }}">
-                            <button class="btn btn-danger w-100" type="submit">
-                                <i class="fas fa-trash"></i> Supprimer
-                            </button>
-                        </form>
+                    {% if equipe.competenceEquipe|length > 0 %}
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            {% for competence in equipe.competenceEquipe %}
+                                <span class="badge bg-success fs-6 px-3 py-2">{{ competence }}</span>
+                            {% endfor %}
+                        </div>
+                        <hr>
+                        <small class="text-muted">
+                            Total : {{ equipe.competenceEquipe|length }} compétence(s) unique(s)
+                        </small>
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <i class="fas fa-tools fa-2x mb-3"></i>
+                            <p>Aucune compétence disponible</p>
+                            <small>Les compétences apparaîtront automatiquement quand vous assignerez des membres avec des compétences à cette équipe</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Affectations de l'équipe -->
+    {% if equipe.affectations|length > 0 %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-calendar-alt me-2"></i>Affectations en cours</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for affectation in equipe.affectations %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-left-primary">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ affectation.chantier.nom }}</h6>
+                                    <p class="card-text small text-muted">
+                                        Du {{ affectation.chantier.dateDebut|date('d/m/Y') }} 
+                                        au {{ affectation.chantier.dateFin|date('d/m/Y') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

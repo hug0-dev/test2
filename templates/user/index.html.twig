@@ -1,144 +1,107 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion des Utilisateurs{% endblock %}
+{% block title %}Liste des équipes{% endblock %}
 
 {% block body %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="mb-4">Gestion des Utilisateurs</h1>
-            
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <p class="text-muted mb-0">{{ users|length }} utilisateur(s) enregistré(s)</p>
-                <a href="{{ path('app_register') }}" class="btn btn-success">
-                    <i class="fas fa-plus"></i> Nouvel utilisateur
-                </a>
-            </div>
-        </div>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion des équipes</h1>
+        <a href="{{ path('app_equipe_new') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nouvelle équipe
+        </a>
     </div>
 
-    <div class="row">
-        {% for user in users %}
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">{{ user.nom }}</h6>
-                        {% if 'ROLE_ADMIN' in user.roles %}
-                            <span class="badge bg-danger">Admin</span>
-                        {% else %}
-                            <span class="badge bg-primary">Utilisateur</span>
-                        {% endif %}
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">
-                            <strong>Email:</strong> {{ user.email }}<br>
-                            <strong>Rôles:</strong> 
-                            {% for role in user.roles %}
-                                <span class="badge bg-secondary me-1">{{ role }}</span>
-                            {% endfor %}
-                        </p>
-
-                        {% set competences = user.competences %}
-                        {% if competences|length > 0 %}
-                            <p class="card-text">
-                                <strong>Compétences ({{ competences|length }}):</strong><br>
-                                {% for competence in competences %}
-                                    <span class="badge bg-success me-1 mb-1">{{ competence }}</span>
-                                {% endfor %}
-                            </p>
-                        {% else %}
-                            <p class="card-text text-muted">
-                                <strong>Compétences:</strong> Aucune compétence définie
-                            </p>
-                        {% endif %}
-
-                        {% if user.affectations|length > 0 %}
-                            <p class="card-text">
-                                <strong>Affectations:</strong> {{ user.affectations|length }} affectation(s)
-                            </p>
-                        {% else %}
-                            <p class="card-text text-muted">
-                                <strong>Affectations:</strong> Aucune affectation
-                            </p>
-                        {% endif %}
-                    </div>
-                    <div class="card-footer">
-                        <div class="btn-group w-100" role="group">
-                            <a href="{{ path('app_user_show', {'id': user.id}) }}" 
-                               class="btn btn-outline-info btn-sm">
-                                <i class="fas fa-eye"></i> Voir
-                            </a>
-                            <a href="{{ path('app_user_manage_competences', {'id': user.id}) }}" 
-                               class="btn btn-outline-warning btn-sm">
-                                <i class="fas fa-cog"></i> Compétences
-                            </a>
-                            <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" 
-                                  style="display: inline;" 
-                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                <button class="btn btn-outline-danger btn-sm" type="submit">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="col-12">
-                <div class="alert alert-info text-center">
-                    <h4>Aucun utilisateur</h4>
-                    <p>Il n'y a encore aucun utilisateur enregistré dans le système.</p>
-                    <a href="{{ path('app_register') }}" class="btn btn-success">
-                        Créer le premier utilisateur
-                    </a>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-
-    {% if users|length > 0 %}
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Statistiques</h5>
-                        <div class="row text-center">
-                            <div class="col-md-3">
-                                <h3 class="text-primary">{{ users|length }}</h3>
-                                <p class="text-muted">Total utilisateurs</p>
-                            </div>
-                            <div class="col-md-3">
-                                {% set admins = 0 %}
-                                {% for user in users %}
-                                    {% if 'ROLE_ADMIN' in user.roles %}
-                                        {% set admins = admins + 1 %}
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom de l'équipe</th>
+                            <th>Chef d'équipe</th>
+                            <th>Membres</th>
+                            <th>Compétences disponibles</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for equipe in equipes %}
+                            <tr>
+                                <td>{{ equipe.id }}</td>
+                                <td>
+                                    <strong>{{ equipe.nomEquipe }}</strong>
+                                </td>
+                                <td>
+                                    {% if equipe.chefEquipe %}
+                                        <span class="badge bg-warning">{{ equipe.chefEquipe.nom }}</span>
+                                    {% else %}
+                                        <span class="text-muted">Aucun chef</span>
                                     {% endif %}
-                                {% endfor %}
-                                <h3 class="text-danger">{{ admins }}</h3>
-                                <p class="text-muted">Administrateurs</p>
-                            </div>
-                            <div class="col-md-3">
-                                {% set totalCompetences = 0 %}
-                                {% for user in users %}
-                                    {% set totalCompetences = totalCompetences + user.competences|length %}
-                                {% endfor %}
-                                <h3 class="text-success">{{ totalCompetences }}</h3>
-                                <p class="text-muted">Total compétences</p>
-                            </div>
-                            <div class="col-md-3">
-                                {% set totalAffectations = 0 %}
-                                {% for user in users %}
-                                    {% set totalAffectations = totalAffectations + user.affectations|length %}
-                                {% endfor %}
-                                <h3 class="text-info">{{ totalAffectations }}</h3>
-                                <p class="text-muted">Total affectations</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ equipe.nombre }} membre(s)</span>
+                                    {% if equipe.membres|length > 0 %}
+                                        <div class="mt-1">
+                                            {% for membre in equipe.membres %}
+                                                <small class="badge bg-secondary me-1">{{ membre.nom }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if equipe.competenceEquipe|length > 0 %}
+                                        <div class="d-flex flex-wrap gap-1">
+                                            {% for competence in equipe.competenceEquipe %}
+                                                <span class="badge bg-success">{{ competence }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">Aucune compétence</span>
+                                        <small class="text-muted d-block">Assignez des membres à l'équipe</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" 
+                                           class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="post" action="{{ path('app_equipe_delete', {'id': equipe.id}) }}" 
+                                              class="d-inline" 
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette équipe ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ equipe.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Aucune équipe trouvée</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
+
+    {% if equipes|length > 0 %}
+    <div class="alert alert-info mt-4">
+        <h6><i class="fas fa-info-circle me-2"></i>Comment ça fonctionne :</h6>
+        <ul class="mb-0">
+            <li><strong>Membres :</strong> Assignez des ouvriers à une équipe via la gestion des utilisateurs</li>
+            <li><strong>Compétences :</strong> Calculées automatiquement selon les compétences des membres</li>
+            <li><strong>Nombre :</strong> Mis à jour automatiquement selon le nombre de membres</li>
+        </ul>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

@@ -1,88 +1,96 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des Équipes{% endblock %}
+{% block title %}Liste des équipes{% endblock %}
 
 {% block body %}
-<div class="container-fluid">
-    <!-- Header avec titre et bouton -->
-    <div class="row align-items-center mb-4">
-        <div class="col">
-            <h2 class="text-center mb-0">
-                🏗️ Liste des Équipes
-            </h2>
-        </div>
-    </div>
-    
-    <!-- Bouton ajouter -->
-    <div class="row mb-4">
-        <div class="col-12 text-end">
-            <a href="{{ path('app_equipe_new') }}" class="btn btn-success">
-                Ajouter une Équipe
-            </a>
-        </div>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion des équipes</h1>
+        <a href="{{ path('app_equipe_new') }}" class="btn btn-primary">
+            Nouvelle équipe
+        </a>
     </div>
 
-    <!-- Liste des équipes -->
-    {% if equipes|length > 0 %}
-        <div class="row">
-            {% for equipe in equipes %}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary">
-                                {{ equipe.nomEquipe }}
-                            </h5>
-                            
-                            <p class="card-text">
-                                <strong>Membres :</strong> {{ equipe.nombre }}<br>
-                                <strong>Chef :</strong> 
-                                {% if equipe.chefEquipe %}
-                                    {{ equipe.chefEquipe.nom }}
-                                {% else %}
-                                    <span class="text-muted">Non assigné</span>
-                                {% endif %}
-                            </p>
-                            
-                            {% if equipe.competanceEquipe|length > 0 %}
-                                <div class="mb-3">
-                                    <strong>Compétences :</strong><br>
-                                    {% for competence in equipe.competanceEquipe %}
-                                        <span class="badge bg-secondary me-1 mb-1">{{ competence }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-
-                            <div class="text-center">
-                                <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" 
-                                   class="btn btn-outline-info btn-sm me-2">
-                                    Détails
-                                </a>
-                                <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" 
-                                   class="btn btn-outline-warning btn-sm">
-                                    Modifier
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="row">
-            <div class="col-12 text-center">
-                <p class="text-muted">🚧 Aucune équipe disponible.</p>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom de l'équipe</th>
+                            <th>Chef d'équipe</th>
+                            <th>Membres</th>
+                            <th>Compétences disponibles</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for equipe in equipes %}
+                            <tr>
+                                <td>{{ equipe.id }}</td>
+                                <td>
+                                    <strong>{{ equipe.nomEquipe }}</strong>
+                                </td>
+                                <td>
+                                    {% if equipe.chefEquipe %}
+                                        <span class="badge bg-warning">{{ equipe.chefEquipe.nom }}</span>
+                                    {% else %}
+                                        <span class="text-muted">Aucun chef</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ equipe.nombre }} membre(s)</span>
+                                    {% if equipe.membres|length > 0 %}
+                                        <div class="mt-1">
+                                            {% for membre in equipe.membres %}
+                                                <small class="badge bg-secondary me-1">{{ membre.nom }}</small>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if equipe.competenceEquipe|length > 0 %}
+                                        <div class="d-flex flex-wrap gap-1">
+                                            {% for competence in equipe.competenceEquipe %}
+                                                <span class="badge bg-success">{{ competence }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">Aucune compétence</span>
+                                        <small class="text-muted d-block">Assignez des membres à l'équipe</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}" 
+                                           class="btn btn-sm btn-outline-info">
+                                            Voir
+                                        </a>
+                                        <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            Modifier
+                                        </a>
+                                        <form method="post" action="{{ path('app_equipe_delete', {'id': equipe.id}) }}" 
+                                              class="d-inline" 
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette équipe ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ equipe.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                Supprimer
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Aucune équipe trouvée</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-    {% endif %}
+    </div>
 </div>
-
-<style>
-.card {
-    transition: transform 0.2s ease;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-}
-</style>
 {% endblock %}

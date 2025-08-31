@@ -39,7 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     // NOUVEAU : Relation avec l'équipe (un user appartient à une équipe)
-    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: 'membres')]
+    #[ORM\ManyToOne(targetEntity: Equipe::class)]
     #[ORM\JoinColumn(name: 'id_equipe', nullable: true, onDelete: 'SET NULL')]
     private ?Equipe $equipe = null;
 
@@ -175,12 +175,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * Récupère les compétences sous forme de tableau
+     * ATTENTION: Version sécurisée pour éviter les boucles infinies
      */
     public function getCompetences(): array
     {
         $competences = [];
+        
+        // Vérifier si la collection est initialisée
+        if ($this->userCompetences === null) {
+            return $competences;
+        }
+        
         foreach ($this->userCompetences as $userCompetence) {
-            $competences[] = $userCompetence->getCompetence()->getNom();
+            if ($userCompetence && $userCompetence->getCompetence()) {
+                $competences[] = $userCompetence->getCompetence()->getNom();
+            }
         }
         return $competences;
     }

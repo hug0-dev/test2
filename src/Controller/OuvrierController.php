@@ -37,8 +37,11 @@ class OuvrierController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        // Récupérer les affectations de l'utilisateur connecté
-        $affectations = $affectationRepository->findBy(['user' => $user]);
+        // Récupérer les affectations via l'équipe de l'utilisateur
+        $affectations = [];
+        if ($user->getEquipe()) {
+            $affectations = $affectationRepository->findBy(['equipe' => $user->getEquipe()]);
+        }
 
         return $this->render('ouvrier/mes_affectations.html.twig', [
             'affectations' => $affectations,

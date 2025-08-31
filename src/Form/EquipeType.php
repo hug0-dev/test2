@@ -7,8 +7,6 @@ use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
 
@@ -20,43 +18,6 @@ class EquipeType extends AbstractType
             ->add('nom_equipe', null, [
                 'label' => 'Nom de l\'équipe',
                 'attr' => ['class' => 'form-control']
-            ])
-            ->add('competance_equipe', ChoiceType::class, [
-                'choices' => [
-                    'Maçon' => 'Maçon',
-                    'Coffreur' => 'Coffreur',
-                    'Ferrailleur' => 'Ferrailleur',
-                    'Terrassier' => 'Terrassier',
-                    "Conducteur d'engins" => "Conducteur d'engins",
-                    'Manœuvre de chantier' => 'Manœuvre de chantier',
-                    'Grutier' => 'Grutier',
-                    'Plombier' => 'Plombier',
-                    'Électricien' => 'Électricien',
-                    'Peintre en bâtiment' => 'Peintre en bâtiment',
-                    'Plâtrier' => 'Plâtrier',
-                    'Carreleur' => 'Carreleur',
-                    'Menuisier' => 'Menuisier',
-                    'Parqueteur' => 'Parqueteur',
-                    'Serrurier-métallier' => 'Serrurier-métallier',
-                    'Chauffagiste' => 'Chauffagiste',
-                    'Enduiseur' => 'Enduiseur',
-                    'Vitrificateur' => 'Vitrificateur',
-                    'Solier-moquettiste' => 'Solier-moquettiste',
-                    'Staffeur-Ornemaniste' => 'Staffeur-Ornemaniste',
-                ],
-                'multiple' => true,
-                'expanded' => false, // FALSE = liste déroulante multiselect, TRUE = cases à cocher
-                'label' => 'Compétences de l\'équipe',
-                'required' => true,
-                'attr' => [
-                    'class' => 'form-select',
-                    'size' => 10  // Hauteur de la liste (nombre d'options visibles)
-                ]
-            ])
-            ->add('nombre', IntegerType::class, [
-                'label' => 'Nombre de membres',
-                'attr' => ['class' => 'form-control', 'min' => 1],
-                'required' => true
             ])
             ->add('chef_equipe', EntityType::class, [
                 'class' => User::class,
@@ -71,6 +32,8 @@ class EquipeType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'form-control']
             ])
+            // Plus besoin de competance_equipe et nombre 
+            // car ils sont calculés automatiquement
         ;
     }
 

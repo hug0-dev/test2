@@ -32,14 +32,12 @@ final class EquipeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $competances = $form->get('competance_equipe')->getData();
-            $equipe->setCompetanceEquipe($competances);
-
-            $nombre = $form->get('nombre')->getData();
-            $equipe->setNombre($nombre);
-
+            // Plus besoin de gérer competance_equipe et nombre
+            // car ils sont calculés automatiquement par les méthodes de l'entité
+            
             $entityManager->persist($equipe);
 
+            // Le chef d'équipe est déjà géré par le formulaire
             if ($equipe->getChefEquipe()) {
                 $chef = $equipe->getChefEquipe();
                 $entityManager->persist($chef);
@@ -72,12 +70,8 @@ final class EquipeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $competances = $form->get('competance_equipe')->getData();
-            $equipe->setCompetanceEquipe($competances);
-
-            $nombre = $form->get('nombre')->getData();
-            $equipe->setNombre($nombre);
-
+            // Plus besoin de gérer competance_equipe et nombre manuellement
+            
             $entityManager->flush();
 
             $this->addFlash('success', 'Équipe modifiée avec succès !');
